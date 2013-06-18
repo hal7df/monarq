@@ -1,0 +1,11 @@
+INSTALLATION INSTRUCTIONS
+=========================
+
+First, you will need the Ministro app from BogDan/KDE, if you haven't already. You can find it [here](https://play.google.com/store/apps/details?id=org.kde.necessitas.ministro&feature=search_result#?t=W251bGwsMSwxLDEsIm9yZy5rZGUubmVjZXNzaXRhcy5taW5pc3RybyJd). It's free.
+
+Then, download and install the APK from the release/ directory (there is not a stable build yet, so there is no release/ directory.
+
+If you have not installed Ministro before, or if it can't find certain libraries (the files Monarq uses to run), the app will ask to install additional libraries. Do so.
+
+Once you've done that, you should be good to go!
+

@@ -86,10 +86,7 @@ Item {
                 else
                 {
                     if (urlChange)
-                    {
                         urlInput.goToUrl();
-                        urlInput.text = "I Made It!";
-                    }
                     else
                         webContent.reload();
                 }
@@ -137,6 +134,21 @@ Item {
                 onContentXChanged: zoomButton.toggled = false
                 onContentYChanged: zoomButton.toggled = false
             }
+        }
+
+        Scrollbar {
+            id: vertScroll
+            height: webContent.visibleArea.heightRatio*webContent.height*.95
+            y: (webContent.visibleArea.yPosition*webContent.height*.95)+((parent.height*.05)/2)
+            visible: webContent.flickingVertically
+        }
+
+        Scrollbar {
+            id: horizontalScroll
+            width: webContent.visibleArea.widthRatio*webContent.width*.95
+            x: (webContent.visibleArea.xPosition*webContent.width*.95)+((parent.width*.05)/2)
+            visible: webContent.flickingHorizontally
+            horizontal: true
         }
 
         function getFlickableHeight()

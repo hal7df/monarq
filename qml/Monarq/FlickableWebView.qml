@@ -85,10 +85,9 @@
      {
          webView.reload.trigger();
      }
-     function loadUrl (url)
+     function loadUrl ()
      {
-         url = webView.fixUrl(url);
-         webView.url = url;
+         webView.fixUrl();
      }
 
      function getFavicon()
@@ -107,18 +106,14 @@
          id: webView
          transformOrigin: Item.TopLeft
 
-         function fixUrl(url)
+         function fixUrl()
          {
-             if (url == "") return url
-             if (url[0] == "/") return "file://"+url
-             if (url.indexOf(":")<0) {
-                 if (url.indexOf(".")<0 || url.indexOf(" ")>=0) {
-                     // Fall back to a search engine; hard-code Google
-                     return "https://encrypted.google.com/search?q="+url;
-                 } else {
-                     return "http://"+url;
-                 }
+             if (url.indexOf(".")<0 || url.indexOf(" ")>=0) {
+                 // Fall back to a search engine; hard-code Google
+                 url="https://encrypted.google.com/search?q="+url;
              }
+             else
+                 url="http://"+url;
          }
 
          url: ""
@@ -157,8 +152,8 @@
              // got to topleft
              flickable.contentX = 0
              flickable.contentY = 0
-             if (url != null && !loading) {
-                 url = fixUrl(url);
+             if (!loading) {
+                 fixUrl();
              }
          }
          onDoubleClick: {

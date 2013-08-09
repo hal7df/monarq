@@ -6,7 +6,7 @@ Rectangle {
     visible: false
     width: progress*parent.width
     anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
-    color: "#29A3CC"
+    color: "#33B5E5"
 
     property double progress: 0.0
 }

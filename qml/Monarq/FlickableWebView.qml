@@ -1,4 +1,5 @@
 /****************************************************************************
+ ** Thanks to the KDE Plasma Active team for pinch support.
  **
  ** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
  ** All rights reserved.
@@ -61,6 +62,7 @@
      contentHeight: Math.max(parent.height,webView.height)
      anchors.fill: parent
      pressDelay: 200
+     boundsBehavior: Flickable.StopAtBounds
 
      onWidthChanged : {
          // Expand (but not above 1:1) if otherwise would be smaller that available width.
@@ -72,7 +74,6 @@
      {
          webView.back.trigger();
      }
-
      function goForward()
      {
          webView.forward.trigger();
@@ -90,16 +91,29 @@
          webView.fixUrl();
      }
 
-     function getFavicon()
+     function getFavicon (fUrl)
      {
-         var nodeList = webView.evaluateJavaScript("document.getElementsByTagName('link')");
-             for (var i = 0; i < nodeList.length; i++)
-             {
-                 if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
-                 {
-                     return nodeList[i].getAttribute("href");
-                 }
-             }
+         var prefix;
+         var colonPosition;
+
+         colonPosition = fUrl.indexOf(":");
+
+         while (fUrl.indexOf("/") != colonPosition+1)
+         {
+             fUrl = fUrl.substring(fUrl.indexOf("/")+1,fUrl.length-1);
+             colonPosition = fUrl.indexOf(":");
+         }
+
+         prefix = fUrl.substring(0,colonPosition+2);
+         fUrl = fUrl.substring(colonPosition+3,fUrl.length-1);
+         fUrl = fUrl.substring(0,fUrl.indexOf("/"));
+         return prefix+fUrl+"favicon.ico";
+     }
+
+     PinchArea {
+         id: pinchZoomer
+         anchors.fill: parent
+         pinch.target: webView
      }
 
      WebView {
@@ -116,7 +130,7 @@
                  url="http://"+url;
          }
 
-         url: ""
+         url: "start.html"
          smooth: false // We don't want smooth scaling, since we only scale during (fast) transitions
          focus: true
 
@@ -141,6 +155,9 @@
          Keys.onRightPressed: webView.contentsScale += 0.1
 
          settings.pluginsEnabled: true
+         settings.offlineWebApplicationCacheEnabled: true
+         settings.offlineStorageDatabaseEnabled: true
+         settings.localStorageDatabaseEnabled: true
 
          contentsScale: 1
          onLoadFinished: flickable.onLoadFinished

@@ -21,9 +21,9 @@ Item {
 
         Image {
             id: siteIcon
-            anchors { top: parent.top; bottom: parent.bottom; left: parent.left }
+            anchors { top: parent.top; bottom: parent.bottom; left: parent.left; margins: 5 }
             width: height
-            source: webContent.loading ? IconUtils.findIcon(height,"loading") : webContent.icon
+            source: webContent.loading ? "images/loading.png" : webContent.icon
             rotation: !webContent.loading ? 0 : 0
 
             NumberAnimation on rotation { from: 0; to: 360; duration: 900; loops: Animation.Infinite; running: webContent.loading }
@@ -118,11 +118,6 @@ Item {
         anchors.right: parent.right
         anchors.left: parent.left
 
-        PinchArea {
-            id: webPinch
-            anchors.fill: parent
-            onPinchFinished: webContent.doZoom(scaleFactor,center)
-
             FlickableWebView {
                 id: webContent
                 width: parent.width
@@ -134,21 +129,22 @@ Item {
                 onContentXChanged: zoomButton.toggled = false
                 onContentYChanged: zoomButton.toggled = false
             }
-        }
 
         Scrollbar {
             id: vertScroll
-            height: webContent.visibleArea.heightRatio*webContent.height*.95
+            barSize: webContent.visibleArea.heightRatio*webContent.height*.95
             y: (webContent.visibleArea.yPosition*webContent.height*.95)+((parent.height*.05)/2)
-            visible: webContent.flickingVertically
+            shown: webContent.movingVertically
+            z: 30
         }
 
         Scrollbar {
             id: horizontalScroll
-            width: webContent.visibleArea.widthRatio*webContent.width*.95
+            barSize: webContent.visibleArea.widthRatio*webContent.width*.95
             x: (webContent.visibleArea.xPosition*webContent.width*.95)+((parent.width*.05)/2)
-            visible: webContent.flickingHorizontally
+            shown: webContent.movingHorizontally
             horizontal: true
+            z: 31
         }
 
         function getFlickableHeight()
@@ -159,6 +155,7 @@ Item {
                 return root.height;
         }
     }
+
 
     Toolbar {
         id: actionBar
@@ -217,21 +214,6 @@ Item {
             anchors.left: zoomOut.right
             progress: ((webContent.contentsScale*100)/500)
             width: progress*(parent.width-(zoomIn.width+zoomOut.width))
-
-            /*MouseArea {
-                id: dragZoom
-                width: 50
-                anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
-                onPressed: parent.anchors.left = undefined;
-
-                //DRAG
-                drag { target: parent; axis: Drag.XAxis; minimumX: parent.progress*zoomBar.width-zoomIn.width; maximumX: zoomBar.width-(zoomOut.width+zoomIn.width) }
-
-                onReleased: {
-                    parent.anchors.left = zoomOut.right;
-                    webContent.contentsScale = (parent.width*500)/100;
-                }
-            }*/
         }
 
         Text {
@@ -267,5 +249,4 @@ Item {
         }
 
     }
-
 }

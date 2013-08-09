@@ -1,5 +1,4 @@
 import QtQuick 1.1
-import "IconUtils.js" as IconUtils
 
 
 Rectangle {
@@ -21,7 +20,7 @@ Rectangle {
 
     ]
 
-    property color pressedColor: "#29A3CC"
+    property color pressedColor: "#33B5E5"
     property string source: ""
     property string category: "navigation"
     property bool srcAbsolute: false
@@ -31,14 +30,10 @@ Rectangle {
     property bool disabled: false
     signal clicked
 
-    function findIcon()
-    {
-
-    }
-
     Image {
         id: image
         anchors.fill: parent
+        anchors.margins: srcAbsolute ? 0.1*parent.width : 0
         fillMode: Image.PreserveAspectFit
         smooth: true
         source: getIconResolution()

@@ -56,6 +56,7 @@ Rectangle {
         id: button
         anchors.fill: parent
         Component.onCompleted: clicked.connect(iconWidget.clicked);
+        enabled: !parent.disabled
         onClicked: {
             if (parent.toggle)
             {

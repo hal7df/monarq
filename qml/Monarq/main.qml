@@ -19,14 +19,15 @@ Item {
             progress: webContent.progress
         }
 
-        Image {
+        IconWidget {
             id: siteIcon
-            anchors { top: parent.top; bottom: parent.bottom; left: parent.left; margins: 5 }
-            width: height
+            anchors { top: parent.top; bottom: parent.bottom; left: parent.left }
             source: webContent.loading ? "images/loading.png" : webContent.icon
-            rotation: !webContent.loading ? 0 : 0
+            srcAbsolute: true
+            iconRotation: !webContent.loading ? 0 : 0
+            toggle: true
 
-            NumberAnimation on rotation { from: 0; to: 360; duration: 900; loops: Animation.Infinite; running: webContent.loading }
+            PropertyAnimation on iconRotation { from: 0; to: 360; duration: 900; loops: Animation.Infinite; running: webContent.loading }
         }
 
         Item {
@@ -81,6 +82,7 @@ Item {
             function startPageAction ()
             {
                 urlChange = false;
+                siteIcon.toggled = false;
                 if (webContent.progress != 1)
                     webContent.stop();
                 else
@@ -117,6 +119,7 @@ Item {
         anchors.bottom: addressBar.visible ? actionBar.top : parent.bottom
         anchors.right: parent.right
         anchors.left: parent.left
+        z: 5
 
             FlickableWebView {
                 id: webContent
@@ -161,7 +164,7 @@ Item {
         id: actionBar
         visible: addressBar.visible
         anchors { bottom: parent.bottom; left: parent.left; right: parent.right }
-        z: 21
+        z: 8
 
         IconWidget {
             id: backButton
@@ -207,6 +210,7 @@ Item {
         id: zoomBar
         visible: zoomButton.toggled
         anchors { right: parent.right; left: parent.left; bottom: actionBar.top }
+        z: 7
 
         ProgressBar {
             id: zoomIndicator
@@ -230,10 +234,7 @@ Item {
             source: "images/out.png"
             srcAbsolute: true
             disabled: webContent.contentsScale.toFixed(1) <= 0.5 ? true : false
-            onClicked: if (!disabled)
-                       {
-                           webContent.contentsScale -= 0.1;
-                       }
+            onClicked: webContent.contentsScale -= 0.1;
         }
 
         IconWidget {
@@ -242,11 +243,56 @@ Item {
             source: "images/in.png"
             srcAbsolute: true
             disabled: webContent.contentsScale.toFixed(1) >= 5.0 ? true : false
-            onClicked: if (!disabled)
-                       {
-                           webContent.contentsScale += 0.1;
-                       }
+            onClicked: webContent.contentsScale += 0.1;
         }
 
+    }
+
+    PageMenu {
+        id: pageInfoMenu
+
+        shown: siteIcon.toggled
+        height: root.height - addressBar.height; z: 10
+        startY: -height
+        endY: addressBar.height
+
+        onShownChanged: {
+            if (shown)
+                zoomBar.visible = false;
+        }
+
+        Flickable {
+            id:pageInfoScroll
+
+            anchors.fill: parent
+            boundsBehavior: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+
+            Item {
+                id: pageInfo
+                width: root.width
+
+                Text {
+                    id: pageName
+                    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 5 }
+                    width: parent.width - 10
+                    wrapMode: Text.WordWrap
+                    font.pointSize: 24
+                    color: "#ffffff"
+                    text: webContent.title
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Text {
+                    id: faviconSource
+                    anchors { horizontalCenter: parent.horizontalCenter; top: pageName.bottom; topMargin: 3 }
+                    width: parent.width - 10
+                    wrapMode: Text.Wrap
+                    font.pointSize: 10
+                    color: "#ffffff"
+                    text: webContent.icon != "" ? webContent.icon : "No favicon"
+                }
+            }
+        }
     }
 }

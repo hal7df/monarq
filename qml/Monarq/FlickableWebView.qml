@@ -128,6 +128,8 @@
              }
              else
                  url="http://"+url;
+
+             console.log("New URL:",url);
          }
 
          url: "start.html"
@@ -169,9 +171,7 @@
              // got to topleft
              flickable.contentX = 0
              flickable.contentY = 0
-             if (!loading) {
-                 fixUrl();
-             }
+             fixUrl();
          }
          onDoubleClick: {
                          if (!heuristicZoom(clickX,clickY,2.5)) {

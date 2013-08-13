@@ -127,10 +127,10 @@ Item {
                 height: parent.height
                 settings.pluginsEnabled: true
                 settings.privateBrowsingEnabled: privateButton.toggled
-                z: 15
                 onLoadFinished: browserLoadControl.urlChanged = false
                 onContentXChanged: zoomButton.toggled = false
                 onContentYChanged: zoomButton.toggled = false
+                onUrlChanged: siteIcon.toggled = false
             }
 
         Scrollbar {
@@ -138,7 +138,6 @@ Item {
             barSize: webContent.visibleArea.heightRatio*webContent.height*.95
             y: (webContent.visibleArea.yPosition*webContent.height*.95)+((parent.height*.05)/2)
             shown: webContent.movingVertically
-            z: 30
         }
 
         Scrollbar {
@@ -147,7 +146,6 @@ Item {
             x: (webContent.visibleArea.xPosition*webContent.width*.95)+((parent.width*.05)/2)
             shown: webContent.movingHorizontally
             horizontal: true
-            z: 31
         }
 
         function getFlickableHeight()
@@ -214,7 +212,6 @@ Item {
 
         ProgressBar {
             id: zoomIndicator
-            visible: true
             anchors.left: zoomOut.right
             progress: ((webContent.contentsScale*100)/500)
             width: progress*(parent.width-(zoomIn.width+zoomOut.width))
@@ -231,18 +228,18 @@ Item {
         IconWidget {
             id: zoomOut
             anchors { left: parent.left; bottom: parent.bottom; top: parent.top }
-            source: "images/out.png"
-            srcAbsolute: true
-            disabled: webContent.contentsScale.toFixed(1) <= 0.5 ? true : false
+            source: "out"
+            category: "view"
+            disabled: webContent.contentsScale.toFixed(1) <= 0.5
             onClicked: webContent.contentsScale -= 0.1;
         }
 
         IconWidget {
             id: zoomIn
             anchors { bottom: parent.bottom; right: parent.right; top: parent.top }
-            source: "images/in.png"
-            srcAbsolute: true
-            disabled: webContent.contentsScale.toFixed(1) >= 5.0 ? true : false
+            source: "in"
+            category: "view"
+            disabled: webContent.contentsScale.toFixed(1) >= 5.0
             onClicked: webContent.contentsScale += 0.1;
         }
 
@@ -258,7 +255,7 @@ Item {
 
         onShownChanged: {
             if (shown)
-                zoomBar.visible = false;
+                zoomButton.toggled = false;
         }
 
         Flickable {
@@ -284,13 +281,84 @@ Item {
                 }
 
                 Text {
-                    id: faviconSource
+                    id: pageURL
                     anchors { horizontalCenter: parent.horizontalCenter; top: pageName.bottom; topMargin: 3 }
                     width: parent.width - 10
                     wrapMode: Text.Wrap
                     font.pointSize: 10
                     color: "#ffffff"
-                    text: webContent.icon != "" ? webContent.icon : "No favicon"
+                    text: webContent.url
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Item {
+                    id: privateBrowsingContainer
+                    anchors { left: parent.left; top: pageURL.bottom; right: parent.right; margins: 5 }
+                    height: privateBrowsingButton.height
+
+                    Text {
+                        id: privateBrowsingLabel
+                        anchors { left: parent.left; top: parent.top; topMargin: 5 }
+                        font.pointSize: 16
+                        color: "#ffffff"
+                        text: "Private Browsing"
+                    }
+
+                    ButtonWidget {
+                        id: privateBrowsingButton
+                        anchors { right: parent.right; verticalCenter: privateBrowsingLabel.verticalCenter }
+                        text: privateButton.toggled ? "ON" : "OFF"
+                        onClicked: {
+                            if (privateButton.toggled)
+                                privateButton.toggled = false;
+                            else
+                                privateButton.toggled = true;
+                        }
+                    }
+                }
+
+                Item {
+                    id: zoomMenuContainer
+                    anchors { right: parent.right; top: privateBrowsingContainer.bottom; left: parent.left; margins: 5 }
+                    height: zoomMenuLevel.height
+
+                    Text {
+                        id: zoomMenuLabel
+                        anchors { top: parent.top; left: parent.left }
+                        font.pointSize: 16
+                        color: "#ffffff"
+                        text: "Zoom"
+                    }
+
+                    Text {
+                        id: zoomMenuLevel
+                        anchors { top: parent.top; right: parent.right }
+                        text: (webContent.contentsScale*100).toFixed(0)+"%"
+                        color: "#ffffff"
+                        font.pointSize: 16
+                    }
+                }
+
+                Item {
+                    id: sslReadout
+                    anchors { left: parent.left; top: zoomMenuContainer.bottom; right: parent.left; margins: 5 }
+                }
+
+                Item {
+                    id: debug
+                    width: root.width
+                    visible: false
+
+                    Text {
+                        id: faviconSource
+                        anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 3 }
+                        width: parent.width - 10
+                        wrapMode: Text.Wrap
+                        font.pointSize: 10
+                        color: "#ffffff"
+                        text: webContent.icon != "" ? webContent.icon : "No favicon"
+                        horizontalAlignment: Text.AlignHCenter
+                    }
                 }
             }
         }

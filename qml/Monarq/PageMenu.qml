@@ -20,4 +20,9 @@ Rectangle {
         from: ""; to: "open"; reversible: true
         PropertyAnimation { target: pageMenu; properties: "y"; duration: 125 }
     }
+
+    MouseArea {
+        id: clickIntercept
+        anchors.fill: parent
+    }
 }

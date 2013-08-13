@@ -48,7 +48,7 @@
      property url icon: getFavicon()
      property alias progress: webView.progress
      property bool loading: webView.progress != 1
-     property alias url: webView.url
+     property url url: webView.url
      property alias html: webView.html
      property alias back: webView.back
      property alias forward: webView.forward
@@ -68,6 +68,11 @@
          // Expand (but not above 1:1) if otherwise would be smaller that available width.
          if (width > webView.width*webView.contentsScale && webView.contentsScale < 1.0)
              webView.contentsScale = width / webView.width * webView.contentsScale;
+     }
+
+     onUrlChanged: {
+         url=webView.fixUrl(url);
+         webView.url = url;
      }
 
      function goBack()
@@ -95,18 +100,23 @@
      {
          var prefix;
          var colonPosition;
+         var slashPosition;
+
+         fUrl = fUrl.toString();
 
          colonPosition = fUrl.indexOf(":");
+         slashPosition = fUrl.indexOf("/");
 
-         while (fUrl.indexOf("/") != colonPosition+1)
+         while (slashPosition != colonPosition+1)
          {
-             fUrl = fUrl.substring(fUrl.indexOf("/")+1,fUrl.length-1);
+             fUrl = fUrl.substring(slashPosition+1,fUrl.length-1);
              colonPosition = fUrl.indexOf(":");
+             slashPosition = fUrl.indexOf("/")
          }
 
          prefix = fUrl.substring(0,colonPosition+2);
          fUrl = fUrl.substring(colonPosition+3,fUrl.length-1);
-         fUrl = fUrl.substring(0,fUrl.indexOf("/"));
+         fUrl = fUrl.substring(0,slashPosition);
          return prefix+fUrl+"favicon.ico";
      }
 
@@ -120,16 +130,19 @@
          id: webView
          transformOrigin: Item.TopLeft
 
-         function fixUrl()
+         function fixUrl(fUrl)
          {
-             if (url.indexOf(".")<0 || url.indexOf(" ")>=0) {
-                 // Fall back to a search engine; hard-code Google
-                 url="https://encrypted.google.com/search?q="+url;
+             if (fUrl == "") return fUrl;
+             else return fUrl;
+             /*if (fUrl.indexOf(":")<0) {
+                 if (fUrl.indexOf(".")<0 || fUrl.indexOf(" ")>=0) {
+                     // Run search query through Google
+                     return "https://encrypted.google.com/search?q="+fUrl;
+                 } else {
+                     return "http://"+fUrl;
+                 }
              }
-             else
-                 url="http://"+url;
-
-             console.log("New URL:",url);
+             return fUrl;*/
          }
 
          url: "start.html"
@@ -171,7 +184,7 @@
              // got to topleft
              flickable.contentX = 0
              flickable.contentY = 0
-             fixUrl();
+             url = fixUrl(url);
          }
          onDoubleClick: {
                          if (!heuristicZoom(clickX,clickY,2.5)) {

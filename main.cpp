@@ -11,6 +11,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer.showExpanded();
     app->setApplicationName("monarq");
     app->setApplicationVersion("0.1");
+    app->setGraphicsSystem("raster");
 
     return app->exec();
 }

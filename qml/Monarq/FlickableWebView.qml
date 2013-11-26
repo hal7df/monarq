@@ -96,13 +96,14 @@
          webView.fixUrl();
      }
 
-     function getFavicon (fUrl)
+     function getFavicon (url)
      {
          var prefix;
          var colonPosition;
          var slashPosition;
+         var fUrl
 
-         fUrl = fUrl.toString();
+         fUrl = url.toString();
 
          colonPosition = fUrl.indexOf(":");
          slashPosition = fUrl.indexOf("/");
